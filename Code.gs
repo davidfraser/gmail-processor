@@ -86,7 +86,7 @@ function processMessage(message, rule, config) {
       match = (attachment.getName()).match(re);
     }
     if (!match) {
-      Logger.log("INFO:           Rejecting file '" + attachment.getName() + " not matching" + rule.filenameFromRegexp);
+      Logger.log("INFO:           Rejecting file '" + attachment.getName() + "' not matching" + rule.filenameFromRegexp);
       continue;
     }
     try {
@@ -150,7 +150,7 @@ function Gmail2GDrive() {
   if (!GmailApp) return; // Skip script execution if GMail is currently not available (yes this happens from time to time and triggers spam emails!)
   var config = getGmail2GDriveConfig();
   var label = getOrCreateLabel(config.processedLabel);
-  var end, start;
+  var end, start, runTime;
   start = new Date(); // Start timer
 
   Logger.log("INFO: Starting mail attachment processing.");
@@ -174,10 +174,10 @@ function Gmail2GDrive() {
     for (var threadIdx=0; threadIdx<threads.length; threadIdx++) {
       var thread = threads[threadIdx];
       end = new Date();
-      var runTime = (end.getTime() - start.getTime())/1000;
+      runTime = (end.getTime() - start.getTime())/1000;
       Logger.log("INFO:     Processing thread: "+thread.getFirstMessageSubject() + " (runtime: " + runTime + "s/" + config.maxRuntime + "s)");
       if (runTime >= config.maxRuntime) {
-        Logger.log("WARNING: Self terminating script after " + runTime + "s")
+        Logger.log("WARNING: Self terminating script after " + runTime + "s");
         return;
       }
 
@@ -201,6 +201,6 @@ function Gmail2GDrive() {
     }
   }
   end = new Date(); // Stop timer
-  var runTime = (end.getTime() - start.getTime())/1000;
+  runTime = (end.getTime() - start.getTime())/1000;
   Logger.log("INFO: Finished mail attachment processing after " + runTime + "s");
 }
