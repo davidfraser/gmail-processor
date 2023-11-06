@@ -169,7 +169,7 @@ function processThreadToHtml(thread) {
 /**
 * Generate a PDF document for the whole thread using HTML from .
  */
-function processThreadToPdf(thread, rule, html) {
+function processThreadToPdf(thread, rule) {
   Logger.log("INFO: Saving PDF copy of thread '" + thread.getFirstMessageSubject() + "'");
   var folder = getOrCreateFolder(rule.folder);
   var html = processThreadToHtml(thread);
