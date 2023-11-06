@@ -81,8 +81,9 @@ function processMessage(message, rule, config) {
     var attachment = attachments[attIdx];
     Logger.log("INFO:         Processing attachment: "+attachment.getName());
     var match = true;
+    var re = null;
     if (rule.filenameFromRegexp) {
-    var re = new RegExp(rule.filenameFromRegexp);
+      re = new RegExp(rule.filenameFromRegexp);
       match = (attachment.getName()).match(re);
     }
     if (!match) {
@@ -92,15 +93,16 @@ function processMessage(message, rule, config) {
     try {
       var folder = getOrCreateFolder(Utilities.formatDate(messageDate, config.timezone, rule.folder));
       var file = folder.createFile(attachment);
+      var filename = file.getName();
       if (rule.filenameFrom && rule.filenameTo && rule.filenameFrom == file.getName()) {
-        var newFilename = Utilities.formatDate(messageDate, config.timezone, rule.filenameTo.replace('%s',message.getSubject()));
-        Logger.log("INFO:           Renaming matched file '" + file.getName() + "' -> '" + newFilename + "'");
-        file.setName(newFilename);
+        filename = Utilities.formatDate(messageDate, config.timezone, rule.filenameTo.replace('%s',message.getSubject()));
+        Logger.log("INFO:           Renaming matched file '" + file.getName() + "' -> '" + filename + "'");
+        file.setName(filename);
       }
       else if (rule.filenameTo) {
-        var newFilename = Utilities.formatDate(messageDate, config.timezone, rule.filenameTo.replace('%s',message.getSubject()));
-        Logger.log("INFO:           Renaming '" + file.getName() + "' -> '" + newFilename + "'");
-        file.setName(newFilename);
+        filename = Utilities.formatDate(messageDate, config.timezone, rule.filenameTo.replace('%s',message.getSubject()));
+        Logger.log("INFO:           Renaming '" + file.getName() + "' -> '" + filename + "'");
+        file.setName(filename);
       }
       file.setDescription("Mail title: " + message.getSubject() + "\nMail date: " + message.getDate() + "\nMail link: https://mail.google.com/mail/u/0/#inbox/" + message.getId());
       Utilities.sleep(config.sleepTime);
