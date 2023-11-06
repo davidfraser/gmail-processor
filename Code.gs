@@ -99,6 +99,12 @@ function processMessage(message, rule, config) {
         Logger.log("INFO:           Renaming matched file '" + file.getName() + "' -> '" + filename + "'");
         file.setName(filename);
       }
+      else if (re && rule.filenameToRegexp) {
+        var filenameFormat = Utilities.formatDate(messageDate, config.timezone, rule.filenameToRegexp);
+        filename = filename.replace(re, filenameFormat);
+        Logger.log("INFO:           Renaming matched file '" + file.getName() + "' => '" + filename + "'");
+        file.setName(filename);
+      }
       else if (rule.filenameTo) {
         filename = Utilities.formatDate(messageDate, config.timezone, rule.filenameTo.replace('%s',message.getSubject()));
         Logger.log("INFO:           Renaming '" + file.getName() + "' -> '" + filename + "'");
