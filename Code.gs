@@ -2,6 +2,13 @@
 // https://github.com/ahochsteger/gmail2gdrive
 
 /**
+ * Shortcut function to run this application, so it comes up first in Google Script interface
+ */
+function doRun() {
+  Gmail2GDrive()
+}
+
+/**
  * Returns the label with the given name or creates it if not existing.
  */
 function getOrCreateLabel(labelName) {
