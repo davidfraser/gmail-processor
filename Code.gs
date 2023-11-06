@@ -21,7 +21,7 @@ function getOrCreateSubFolder(baseFolder,folderArray) {
   }
   var nextFolderName = folderArray.shift();
   var nextFolder = null;
-  var folders = baseFolder.getFolders();
+  var folders = baseFolder.getFoldersByName(nextFolderName);
   while (folders.hasNext()) {
     var folder = folders.next();
     if (folder.getName() == nextFolderName) {
@@ -30,8 +30,19 @@ function getOrCreateSubFolder(baseFolder,folderArray) {
     }
   }
   if (nextFolder == null) {
-    // Folder does not exist - create it.
-    nextFolder = baseFolder.createFolder(nextFolderName);
+    var potentialShortcuts = baseFolder.getFilesByName(nextFolderName);
+    while (potentialShortcuts.hasNext()) {
+      var potentialShortcut = potentialShortcuts.next();
+      var potentialShortcutTargetId = potentialShortcut.getTargetId();
+      if (potentialShortcutTargetId != null) {
+        // we're not handling a shortcut that's a file instead of a folder...
+        nextFolder = DriveApp.getFolderById(potentialShortcutTargetId);
+      }
+    }
+    if (nextFolder == null) {
+      // Folder does not exist (even as a shortcut) - create it.
+      nextFolder = baseFolder.createFolder(nextFolderName);
+    }
   }
   return getOrCreateSubFolder(nextFolder,folderArray);
 }
@@ -50,7 +61,17 @@ function getFolderByPath(path) {
     if (result.hasNext()) {
       folder = result.next();
     } else {
-      throw new Error( "folder not found." );
+      var potentialShortcuts = folder.getFilesByName(parts[i]);
+      if (potentialShortcuts.hasNext()) {
+        var potentialShortcut = potentialShortcuts.next();
+        var potentialShortcutTargetId = potentialShortcut.getTargetId();
+        if (potentialShortcutTargetId != null) {
+          // we're not handling a shortcut that's a file instead of a folder...
+          folder = DriveApp.getFolderById(potentialShortcutTargetId);
+        }
+      } else {
+        throw new Error( "folder not found." );
+      }
     }
   }
   return folder;
